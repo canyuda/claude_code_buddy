@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.claude.buddyd</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>python3</string>
+        <string>--</string>
+        <!-- Replace with your actual path -->
+        <string>/path/to/claude-code-buddy/hooks/buddyd.py</string>
+        <string>--foreground</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/buddyd.stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/tmp/buddyd.stderr.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+</dict>
+</plist>
