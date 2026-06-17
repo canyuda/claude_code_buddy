@@ -98,7 +98,7 @@ class BleLineBuffer:
 class PendingPermission:
     """A permission prompt awaiting a button-press response from the ESP32."""
 
-    def __init__(self, prompt_id: str, timeout: float = 25.0) -> None:
+    def __init__(self, prompt_id: str, timeout: float = 60.0) -> None:
         self.prompt_id = prompt_id
         self.timeout = timeout
         self.event: asyncio.Event = asyncio.Event()
@@ -132,7 +132,8 @@ class BuddyDaemon:
         """Scan for a BLE device named Claude-XXXX, return its address."""
         log.info("Scanning for BLE device with prefix '%s'...", DEVICE_NAME_PREFIX)
         try:
-            devices = await BleakScanner.scan(timeout=5.0)
+            # bleak 3.x renamed BleakScanner.scan() → discover()
+            devices = await BleakScanner.discover(timeout=5.0)
             for d in devices:
                 name = d.name or ""
                 if name.startswith(DEVICE_NAME_PREFIX):
@@ -308,7 +309,9 @@ class BuddyDaemon:
                 prompt_id = cmd.get("id", "")
                 tool = cmd.get("tool", "")
                 hint = cmd.get("hint", "")
-                timeout_s = min(cmd.get("timeout", 25), 30)
+                # Default 60s (gives the user time to read & press), cap at
+                # 120s so a bogus value can't stall the session indefinitely.
+                timeout_s = min(cmd.get("timeout", 60), 120)
 
                 prompt_payload = json.dumps({
                     "total": 1,

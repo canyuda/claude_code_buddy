@@ -41,8 +41,9 @@ static void rxPush(const uint8_t* p, size_t n) {
 
 class RxCallbacks : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic* c) override {
-    std::string v = c->getValue();
-    if (!v.empty()) rxPush((const uint8_t*)v.data(), v.size());
+    // ESP32 core 3.x: getValue() returns Arduino String, not std::string.
+    String v = c->getValue();
+    if (v.length()) rxPush((const uint8_t*)v.c_str(), v.length());
   }
 };
 
@@ -91,7 +92,8 @@ void bleInit(const char* deviceName) {
   // Request the biggest MTU we can get. macOS negotiates to 185 typically.
   BLEDevice::setMTU(517);
 
-  BLEDevice::setEncryptionLevel(ESP_BLE_SEC_ENCRYPT_MITM);
+  // ESP32 core 3.x: setEncryptionLevel moved from BLEDevice to BLESecurity.
+  BLESecurity::setEncryptionLevel(ESP_BLE_SEC_ENCRYPT_MITM);
   BLEDevice::setSecurityCallbacks(new SecCallbacks());
 
   server = BLEDevice::createServer();

@@ -16,12 +16,13 @@ static void doSleep(uint32_t t) {
   static const char* const PURR[5]     = { "            ", "            ", "   .-..-.   ", "  ( u.u )   ", " `~------'~ " };
   static const char* const DREAM[5]    = { "            ", "            ", "   .-..-.   ", "  ( o.o )   ", "  `------`  " };
 
-  const char* const* P[6] = { LOAF, BREATHE, LOAF, PURR, CURL, CURL_TW };
+  const char* const* P[7] = { LOAF, BREATHE, LOAF, PURR, CURL, CURL_TW, DREAM };
   static const uint8_t SEQ[] = {
     0,1,0,1,0,1,
     3,3,0,1,
     4,5,4,5,4,5,
     2,2,
+    6,6,6,6,           // deep sleep: dream (eyes o.o) — brief REM burst
     0,1,0,1,
     5,5,4,4
   };

@@ -1,9 +1,12 @@
 #include <M5StickCPlus.h>
 #include <LittleFS.h>
 #include <stdarg.h>
+#include <esp_mac.h>   // ESP32 core 3.x: esp_read_mac / ESP_MAC_BT live here (not auto-included)
 #include "ble_bridge.h"
 #include "data.h"
 #include "buddy.h"
+#include "character.h"
+#include "stats.h"
 
 TFT_eSprite spr = TFT_eSprite(&M5.Lcd);
 
@@ -18,8 +21,6 @@ static void startBt() {
   bleInit(btName);
 }
 
-#include "character.h"
-#include "stats.h"
 const int W = 135, H = 240;
 const int CX = W / 2;
 const int CY_BASE = 120;
@@ -30,6 +31,12 @@ const uint16_t HOT   = 0xFA20;   // red-orange: warnings, impatience, deny
 const uint16_t PANEL = 0x2104;   // overlay panel background
 
 enum PersonaState { P_SLEEP, P_IDLE, P_BUSY, P_ATTENTION, P_CELEBRATE, P_DIZZY, P_HEART };
+
+// Forward declarations — defined later in this file. Providing them here
+// (after the enum) prevents the Arduino preprocessor from auto-generating
+// prototypes that would land BEFORE the enum definition and break.
+PersonaState derive(const TamaState& s);
+void triggerOneShot(PersonaState s, uint32_t durMs);
 const char* stateNames[] = { "sleep", "idle", "busy", "attention", "celebrate", "dizzy", "heart" };
 
 TamaState    tama;

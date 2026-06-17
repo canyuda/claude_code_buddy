@@ -16,11 +16,12 @@ static void doSleep(uint32_t t) {
   static const char* const JIGGLE[5]  = { "            ", "  /\\____/\\  ", " ( -    - ) ", "(   ~~~~   )", " ~~~~~~~~~~ " };
   static const char* const DROOL[5]   = { "            ", "  /\\____/\\  ", " ( -    u ) ", " (   __   ) ", " (___..___) " };
 
-  const char* const* P[6] = { CURL, INHALE, EXHALE, SNORE, INHALE, JIGGLE };
+  const char* const* P[7] = { CURL, INHALE, EXHALE, SNORE, INHALE, JIGGLE, DROOL };
   static const uint8_t SEQ[] = {
     0,0,0,1,2,1,2,
     1,2,1,2,
     3,3,1,2,
+    6,6,6,6,           // deep sleep: drool — mouth falls open
     1,2,1,2,
     5,4,5,4,
     0,0,

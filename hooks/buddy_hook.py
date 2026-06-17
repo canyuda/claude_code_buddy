@@ -33,7 +33,7 @@ SOCK_PATH = os.environ.get(
     os.path.expanduser("~/.claude/buddy.sock"),
 )
 SOCKET_TIMEOUT = 3.0       # seconds to wait for socket connect / state response
-PERMISSION_TIMEOUT = 25.0  # seconds to wait for button press
+PERMISSION_TIMEOUT = 60.0  # seconds to wait for button press
 
 # ---------------------------------------------------------------------------
 # Logging (optional, only if BUDDY_HOOK_LOG is set)
@@ -217,7 +217,7 @@ def output_permission_decision(decision: str) -> None:
         decision_value = "deny"
     else:
         decision_value = "ask"
-    print(json.dumps({"hookSpecificOutput": {"permissionDecision": decision_value}}))
+    print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": decision_value}}))
 
 
 # ---------------------------------------------------------------------------
@@ -242,9 +242,14 @@ def main() -> int:
         tool_name = data.get("tool_name", "")
         tool_input = data.get("tool_input", {})
 
-        # Only intercept tools that need permission (not read-only tools)
-        # Read-only tools like Read, Glob, Grep don't need physical approval
-        readonly_tools = {"Read", "Glob", "Grep", "TaskList", "TaskGet"}
+        # Only intercept tools that need permission (not read-only/harmless tools)
+        # Read-only tools (Read, Glob, Grep) and Task tools (TodoWrite family:
+        # TaskCreate/TaskUpdate/TaskList/TaskGet are pure in-memory todo state)
+        # never need physical approval on the device.
+        readonly_tools = {
+            "Read", "Glob", "Grep",
+            "TaskCreate", "TaskUpdate", "TaskList", "TaskGet",
+        }
         if tool_name in readonly_tools:
             # Just update state, don't prompt for approval
             state = build_state_update(data)
@@ -267,7 +272,8 @@ def main() -> int:
         log(f"Sending prompt: id={prompt_id} tool={tool_name} hint={hint}")
 
         resp = socket_send(
-            {"action": "prompt", "id": prompt_id, "tool": tool_name, "hint": hint},
+            {"action": "prompt", "id": prompt_id, "tool": tool_name, "hint": hint,
+             "timeout": PERMISSION_TIMEOUT},
             timeout=PERMISSION_TIMEOUT,
         )
 

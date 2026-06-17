@@ -69,6 +69,28 @@ void buddySetColor(uint16_t fg)   { _tgt->setTextColor(fg, BUDDY_BG); }
 void buddyPrint(const char* s)    { _tgt->setTextSize(_scale); _tgt->print(s); }
 
 // ──────────────── species registry ────────────────
+
+// Compile the 18 species definition files into this translation unit.
+// Arduino IDE does not recurse into buddies/, so without these includes
+// the linker reports undefined references to *_SPECIES.
+#include "buddies/axolotl.cpp"
+#include "buddies/blob.cpp"
+#include "buddies/cactus.cpp"
+#include "buddies/capybara.cpp"
+#include "buddies/cat.cpp"
+#include "buddies/chonk.cpp"
+#include "buddies/dragon.cpp"
+#include "buddies/duck.cpp"
+#include "buddies/ghost.cpp"
+#include "buddies/goose.cpp"
+#include "buddies/mushroom.cpp"
+#include "buddies/octopus.cpp"
+#include "buddies/owl.cpp"
+#include "buddies/penguin.cpp"
+#include "buddies/rabbit.cpp"
+#include "buddies/robot.cpp"
+#include "buddies/snail.cpp"
+#include "buddies/turtle.cpp"
 extern const Species CAPYBARA_SPECIES;
 extern const Species DUCK_SPECIES;
 extern const Species GOOSE_SPECIES;

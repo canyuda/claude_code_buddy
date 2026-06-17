@@ -44,7 +44,13 @@ do_start() {
     fi
 
     echo "Starting buddyd..."
-    python3 "$DAEMON" --log "$LOG_FILE" --socket "$SOCK_PATH"
+    # Run buddyd in --foreground mode under nohup instead of relying on its
+    # built-in os.fork() daemonization (which crashes on macOS + Python 3.14:
+    # the forked child dies before write_pid, so the PID file never appears).
+    # --foreground still runs write_pid(), so stop/status keep working.
+    nohup python3 "$DAEMON" --foreground --log "$LOG_FILE" --socket "$SOCK_PATH" \
+        >/dev/null 2>&1 &
+    disown 2>/dev/null || true
     sleep 1
 
     if is_running; then
